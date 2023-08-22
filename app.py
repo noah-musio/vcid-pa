@@ -1,7 +1,20 @@
-from app import app, db, cli
-from app.models import User, Post
+from flask import Flask, jsonify
 
+app = Flask(__name__)
 
-@app.shell_context_processor
-def make_shell_context():
-    return {'db': db, 'User': User, 'Post': Post}
+# Home Page
+@app.route('/')
+def home():
+    return "Welcome to the Flask Testing App!"
+
+# Sample API Endpoint
+@app.route('/api/sample', methods=['GET'])
+def sample_api():
+    data = {
+        'message': 'This is a sample API response',
+        'status': 'success'
+    }
+    return jsonify(data)
+
+if __name__ == '__main__':
+    app.run(debug=True)
