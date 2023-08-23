@@ -3,7 +3,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
-from app import routes, models, errors
+from flask_bootstrap import Bootstrap
 
 import os
 
@@ -34,5 +34,7 @@ migrate = Migrate(app, db)
 login = LoginManager(app)
 login.login_view = 'login'
 
+bootstrap = Bootstrap(app)
 
-from app import routes, models
+
+from app import routes, models, errors
