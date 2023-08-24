@@ -14,6 +14,13 @@ def index():
     # user = {'username': 'Noah'}
     return render_template('index.html', title='Home')
 
+@app.route('/data')
+@login_required
+def data():
+    return render_template('data.html', title='Data')
+
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     print("debug")
