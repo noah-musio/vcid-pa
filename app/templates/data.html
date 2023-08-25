@@ -9,6 +9,14 @@
     {% endif %}
 {% endblock %}
 {% block content %}
+
+<label for="category-select">Select a category:</label>
+<select id="category-select">
+    {% for category in categories %}
+    <option value="{{ category.id }}">{{ category.name }}</option>
+    {% endfor %}
+</select>
+
 <table class="table">
     <thead>
         <th>Account</th>
