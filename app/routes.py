@@ -6,6 +6,7 @@ from app.forms import LoginForm, RegistrationForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Account, Category, Balance
 from werkzeug.urls import url_parse
+from sqlalchemy import func
 
 @app.route('/')
 @app.route('/index')
@@ -20,8 +21,11 @@ def data():
     categories = Category.query.all()
     balance = Balance.query.all()
     account = Account.query.all()
-    return render_template('data.html', title='Data', categories=categories, balance=balance)
-
+    years = get_years()
+    return render_template('data.html', title='Data', categories=categories, balance=balance, account=account, years=years)
+def get_years():
+    years = db.session.query(func.extract('year', Balance.date)).distinct().all()
+    return [year[0] for year in years] 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
