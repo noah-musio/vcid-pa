@@ -13,7 +13,7 @@ CSRF_TRUSTED_ORIGINS = ['https://' + os.environ['WEBSITE_HOSTNAME']] if 'WEBSITE
 # conn_str = os.environ['AZURE_POSTGRESQL_CONNECTIONSTRING']
 # onn_str_params = {pair.split('=')[0]: pair.split('=')[1] for pair in conn_str.split(' ')}
 
-DATABASE_URI = 'mysql+pymysql://{dbuser}:{dbpass}@{dbhost}/{dbname}'.format(
+DATABASE_URI = 'mysql+pymysql://{dbuser}:{dbpass}@{dbhost}/{dbname}?ssl_key=config/DigiCertGlobalRootCA.crt.pem'.format(
     dbuser=os.environ['AZURE_MYSQL_USER'],
     dbpass=os.environ['AZURE_MYSQL_PASSWORD'],
     dbhost=os.environ['AZURE_MYSQL_HOST'],
