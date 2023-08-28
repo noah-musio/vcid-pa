@@ -36,7 +36,8 @@ class Balance(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     account_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
     balance = db.Column(db.Float, nullable=False)    
-    date = db.Column(db.Integer, nullable=False)
+    year = db.Column(db.Integer, nullable=False)
+    month = db.Column(db.Integer, nullable=False)
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)

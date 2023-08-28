@@ -22,12 +22,20 @@ def data():
     balance = Balance.query.all()
     account = Account.query.all()
     years = get_years()
-    return render_template('data.html', title='Data', categories=categories, balance=balance, account=account, years=years)
+    months = get_months()
+    balances_by_date = {}
+    for year in years:
+        for month in months:
+            balances = Balance.query.filter_by(year=year, month=month).all()
+            key = f"{year}-{month:02d}"
+            balances_by_date[key] = balances
+    return render_template('data.html', title='Data', categories=categories, balance=balance, account=account, years=years, months=months, balances=balances_by_date)
 def get_years():
-    years = db.session.query(func.extract('year', Balance.date)).distinct().all()
+    years = db.session.query(Balance.year).distinct().all()
     return [year[0] for year in years] 
-
-
+def get_months():
+    months = db.session.query(Balance.month).distinct().all()
+    return [month[0] for month in months]
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
