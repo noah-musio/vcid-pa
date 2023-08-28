@@ -10,6 +10,8 @@
 {% endblock %}
 {% block content %}
 
+<div class="container">
+
 <label for="category-select">Select a category:</label>
 <select id="category-select">
     {% for category in categories %}
@@ -25,28 +27,47 @@
     {% endfor %}
 </select>
 
-<table class="table">
-    <thead>
-        <th>Account</th>
-        <th>January</th>
-        <th>February</th>
-        <th>March</th>
-        <th>April</th>
-        <th>May</th>
-        <th>June</th>
-        <th>July</th>
-        <th>August</th>
-        <th>September</th>
-        <th>October</th>
-        <th>November</th>
-        <th>December</th>
-    </thead>
-    <tbody>
-        <tr>
-            {% for value in balance %}
-            <td>{{ value.balance }}</td>
+
+{% for year in years %}
+    <h2>Data for {{ year }}</h2>
+    <table class="table">
+        <thead>
+            <th>Account</th>
+            <th>January</th>
+            <th>February</th>
+            <th>March</th>
+            <th>April</th>
+            <th>May</th>
+            <th>June</th>
+            <th>July</th>
+            <th>August</th>
+            <th>September</th>
+            <th>October</th>
+            <th>November</th>
+            <th>December</th>
+        </thead>
+        <tbody>
+            {% for value in balance[year] %}
+            <tr>
+                <td>{{ value.account.name }}</td>
+                <td>{{ value.january }}</td>
+                <td>{{ value.february }}</td>
+                <td>{{ value.march }}</td>
+                <td>{{ value.april }}</td>
+                <td>{{ value.may }}</td>
+                <td>{{ value.june }}</td>
+                <td>{{ value.july }}</td>
+                <td>{{ value.august }}</td>
+                <td>{{ value.september }}</td>
+                <td>{{ value.october }}</td>
+                <td>{{ value.november }}</td>
+                <td>{{ value.december }}</td>
+            </tr>
             {% endfor %}
-        </tr>
-    </tbody>
-</table>
+        </tbody>
+    </table>
+{% endfor %}
+
+</div>
+
 {% endblock %}
