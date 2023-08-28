@@ -19,17 +19,20 @@ def index():
 @login_required
 def data():
     categories = Category.query.all()
-    balance = Balance.query.all()
-    account = Account.query.all()
+    accounts = Account.query.all()
     years = get_years()
     months = get_months()
-    balances_by_date = {}
+    
+    balances_by_year_month = {}
+    
     for year in years:
+        balances_by_month = {}
         for month in months:
-            balances = Balance.query.filter_by(year=year, month=month).all()
-            key = f"{year}-{month:02d}"
-            balances_by_date[key] = balances
-    return render_template('data.html', title='Data', categories=categories, balance=balance, account=account, years=years, months=months, balances=balances_by_date)
+            balances_for_month = Balance.query.filter_by(year=year, month=month).all()
+            balances_by_month[month] = balances_for_month
+        balances_by_year_month[year] = balances_by_month
+    
+    return render_template('data.html', title='Data', categories=categories, accounts=accounts, years=years, months=months, balances=balances_by_year_month)
 def get_years():
     years = db.session.query(Balance.year).distinct().all()
     return [year[0] for year in years] 

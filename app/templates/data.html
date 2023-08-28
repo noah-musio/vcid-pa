@@ -27,25 +27,6 @@
     {% endfor %}
 </select>
 
-{% for key, balances_year in balances.items() %}
-    {% set year, month = key.split('-') %}
-    <h2>Data for {{ month }}/{{ year }}</h2>
-    <table class="table">
-        <thead>
-            <th>Account</th>
-            <th>Balance</th>
-        </thead>
-        <tbody>
-            {% for balance in balances_year %}
-            <tr>
-                <td>{{ balance.account.name }}</td>
-                <td>{{ balance.balance }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-{% endfor %}
-
 
 
 
@@ -68,26 +49,26 @@
             <th>December</th>
         </thead>
         <tbody>
-            {% for month in months[month] %}
+            {% for account in accounts %}
             <tr>
-                <td>{{ months }}</td>
-                <td>{{ months }}</td>
-                <!--<td>{{ value.february }}</td>
-                <td>{{ value.march }}</td>
-                <td>{{ value.april }}</td>
-                <td>{{ value.may }}</td>
-                <td>{{ value.june }}</td>
-                <td>{{ value.july }}</td>
-                <td>{{ value.august }}</td>
-                <td>{{ value.september }}</td>
-                <td>{{ value.october }}</td>
-                <td>{{ value.november }}</td>
-                <td>{{ value.december }}</td>-->
+                <td>{{ account.name }}</td>
+                {% for month in months %}
+                    <td>
+                        {% set balance_entry = balances[year][month] | selectattr('account_id', 'eq', account.id) | first %}
+                        {% if balance_entry %}
+                            {{ balance_entry.balance }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                {% endfor %}
             </tr>
             {% endfor %}
         </tbody>
     </table>
 {% endfor %}
+
+
 
 </div>
 
