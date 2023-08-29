@@ -26,10 +26,13 @@ class RegistrationForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
             raise ValidationError('Please use a different email address.')
-        
+
+
+
 class BalanceForm(FlaskForm):
     balance = FloatField('Balance', validators=[DataRequired()])
-    year = IntegerField('Year', validators=[DataRequired(), NumberRange(min=1900, max=2100), Length(min=4, max=4, message="4 digits")])
+    year = IntegerField('Year', validators=[DataRequired(), NumberRange(min=1900, max=2100)])
     month = SelectField('Month', choices=['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], validators=[DataRequired()])
     account = SelectField('Account', choices=[], coerce=int, validators=[DataRequired()])
     submit = SubmitField('Submit')
+

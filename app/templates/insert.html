@@ -13,17 +13,9 @@
 </select>
 
 
-<label for="month-select">Select a month:</label>
-<select id="month-select" name="month">
-    {% for month in months %}
-    <option value="{{ month }}" {% if month == selected_month %}selected{% endif %}>{{ month }}</option>
-    {% endfor %}
-</select>
 
-
-
-<h1>Input Balance</h1>
-<form method="POST">
+<h1>Insert Balance</h1>
+<form class="form-control" method="POST">
     {{ form.csrf_token }}
     {{ form.hidden_tag() }}
     <div class="form-group">

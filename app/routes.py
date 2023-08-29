@@ -22,13 +22,13 @@ def data():
     accounts = Account.query.all()
     years = get_years()
     months = get_months()
-    
+    user_id = current_user.id
     balances_by_year_month = {}
     
     for year in years:
         balances_by_month = {}
         for month in months:
-            balances_for_month = Balance.query.filter_by(year=year, month=month).all()
+            balances_for_month = Balance.query.filter_by(user_id=user_id, year=year, month=month).all()
             balances_by_month[month] = balances_for_month
         balances_by_year_month[year] = balances_by_month
     
