@@ -2,7 +2,7 @@
 
 from flask import render_template, flash, redirect, url_for, request, jsonify
 from app import app, db
-from app.forms import LoginForm, RegistrationForm
+from app.forms import BalanceForm, LoginForm, RegistrationForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Account, Category, Balance
 from werkzeug.urls import url_parse
@@ -39,6 +39,36 @@ def get_years():
 def get_months():
     months = db.session.query(Balance.month).distinct().all()
     return [month[0] for month in months]
+
+@app.route('/insert', methods=['GET', 'POST'])
+@login_required
+def insert():
+    form = BalanceForm()
+
+    if form.validate_on_submit():
+        account_id = form.account.data
+        year = form.year.data
+        month = form.month.data
+        balance_value = form.balance.data
+
+        # Get the Account instance based on the selected account_id
+        account = Account.query.get(account_id)
+
+        # Create a new Balance instance and set its attributes
+        new_balance = Balance(account=account, balance=balance_value, year=year, month=month)
+
+        # Add the new_balance instance to the database session
+        db.session.add(new_balance)
+        db.session.commit()
+
+        flash('Balance inserted successfully!', 'success')
+        return redirect(url_for('data'))
+
+    accounts = Account.query.all()
+    form.account.choices = [(account.id, account.name) for account in accounts]
+
+    return render_template('insert.html', title='Insert Balance', form=form)
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

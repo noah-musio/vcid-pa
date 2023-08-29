@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block content %}
+
+<div class="container">
+
+<label for="category-select">Select a category:</label>
+<select id="category-select">
+    {% for category in categories %}
+    <option value="{{ category.id }}">{{ category.name }}</option>
+    {% endfor %}
+</select>
+
+
+<label for="month-select">Select a month:</label>
+<select id="month-select" name="month">
+    {% for month in months %}
+    <option value="{{ month }}" {% if month == selected_month %}selected{% endif %}>{{ month }}</option>
+    {% endfor %}
+</select>
+
+
+
+<h1>Input Balance</h1>
+<form method="POST">
+    {{ form.csrf_token }}
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+        {{ form.balance.label }}
+        {{ form.balance() }}
+    </div>
+    <div class="form-group">
+        {{ form.month.label }}
+        {{ form.month() }}
+    </div>
+    <div class="form-group">
+        {{ form.year.label }}
+        {{ form.year() }}
+    </div>
+    <div class="form-group">
+        {{ form.account.label }}
+        {{ form.account() }}
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+
+</div>
+{% endblock %}

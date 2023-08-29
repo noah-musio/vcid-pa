@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
-from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, FloatField, IntegerField, SelectField
+from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Length, NumberRange
 from app.models import User
 
 class LoginForm(FlaskForm):
@@ -26,3 +26,10 @@ class RegistrationForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
             raise ValidationError('Please use a different email address.')
+        
+class BalanceForm(FlaskForm):
+    balance = FloatField('Balance', validators=[DataRequired()])
+    year = IntegerField('Year', validators=[DataRequired(), NumberRange(min=1900, max=2100), Length(min=4, max=4, message="4 digits")])
+    month = SelectField('Month', choices=['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], validators=[DataRequired()])
+    account = SelectField('Account', choices=[], coerce=int, validators=[DataRequired()])
+    submit = SubmitField('Submit')
