@@ -12,27 +12,20 @@
 
 <div class="container">
 
-<label for="category-select">Select a category:</label>
-<select id="category-select">
-    {% for category in categories %}
-    <option value="{{ category.id }}">{{ category.name }}</option>
-    {% endfor %}
-</select>
 
 
-<label for="category-select">Select a year</label>
-<select id="category-select">
-    {% for year in years %}
-    <option value="{{ year }}">{{ year }}</option>
-    {% endfor %}
-</select>
 
 
-{% for year in years %}
+
+
+
+{% for year in years | reverse %}
+
     <h2>Data for {{ year }}</h2>
     <table class="table">
         <thead>
             <th>Account</th>
+            <th>Category</th>
             <th>January</th>
             <th>February</th>
             <th>March</th>
@@ -47,26 +40,45 @@
             <th>December</th>
         </thead>
         <tbody>
-            {% for value in balance[year] %}
+            {% for account in accounts %}
             <tr>
-                <td>{{ value.account.name }}</td>
-                <td>{{ value.january }}</td>
-                <td>{{ value.february }}</td>
-                <td>{{ value.march }}</td>
-                <td>{{ value.april }}</td>
-                <td>{{ value.may }}</td>
-                <td>{{ value.june }}</td>
-                <td>{{ value.july }}</td>
-                <td>{{ value.august }}</td>
-                <td>{{ value.september }}</td>
-                <td>{{ value.october }}</td>
-                <td>{{ value.november }}</td>
-                <td>{{ value.december }}</td>
+                <td>{{ account.name }}</td>
+                <td>{{ account.category.name }}</td>
+                {% for month in range(1, 13) %}
+                    <td>
+                        {% set balance_entry = balances[year][month] | selectattr('account_id', 'eq', account.id) | first %}
+                        {% if balance_entry %}
+                            CHF {{ balance_entry.balance }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                {% endfor %}
             </tr>
             {% endfor %}
         </tbody>
+        <tfoot>
+            <tr>
+                <td>Total</td>
+                <td></td>
+                {% for month in range(1, 13) %}
+                    <td>
+                        {% set month_balances = balances[year][month] %}
+                        {% if month_balances %}
+                            {% set total_balance = month_balances | map(attribute='balance') | sum %}
+                            CHF {{ total_balance }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                {% endfor %}
+            </tr>
+
+
+        </tfoot>
     </table>
 {% endfor %}
+
 
 </div>
 

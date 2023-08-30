@@ -2,7 +2,7 @@
 
 from flask import render_template, flash, redirect, url_for, request, jsonify
 from app import app, db
-from app.forms import LoginForm, RegistrationForm
+from app.forms import BalanceForm, LoginForm, RegistrationForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Account, Category, Balance
 from werkzeug.urls import url_parse
@@ -19,14 +19,59 @@ def index():
 @login_required
 def data():
     categories = Category.query.all()
-    balance = Balance.query.all()
-    account = Account.query.all()
+    accounts = Account.query.all()
     years = get_years()
-    return render_template('data.html', title='Data', categories=categories, balance=balance, account=account, years=years)
+    months = get_months()
+    user_id = current_user.id
+    balances_by_year_month = {}
+    
+    for year in years:
+        balances_by_month = {}
+        for month in months:
+            balances_for_month = Balance.query\
+                .join(Account, Balance.account_id == Account.id)\
+                .filter(Account.user_id == current_user.id, Balance.year == year, Balance.month == month)\
+                .all()
+            # balances_for_month = Balance.query.filter_by(user_id=user_id, year=year, month=month).all()
+            balances_by_month[month] = balances_for_month
+        balances_by_year_month[year] = balances_by_month
+    
+    return render_template('data.html', title='Data', categories=categories, accounts=accounts, years=years, months=months, balances=balances_by_year_month)
 def get_years():
-    years = db.session.query(func.extract('year', Balance.date)).distinct().all()
+    years = db.session.query(Balance.year).distinct().all()
     return [year[0] for year in years] 
+def get_months():
+    months = db.session.query(Balance.month).distinct().all()
+    return [month[0] for month in months]
 
+@app.route('/insert', methods=['GET', 'POST'])
+@login_required
+def insert():
+    form = BalanceForm()
+
+    if form.validate_on_submit():
+        account_id = form.account.data
+        year = form.year.data
+        month = form.month.data
+        balance_value = form.balance.data
+
+        # Get the Account instance based on the selected account_id
+        account = Account.query.get(account_id)
+
+        # Create a new Balance instance and set its attributes
+        new_balance = Balance(account=account, balance=balance_value, year=year, month=month)
+
+        # Add the new_balance instance to the database session
+        db.session.add(new_balance)
+        db.session.commit()
+
+        flash('Balance inserted successfully!', 'success')
+        return redirect(url_for('data'))
+
+    accounts = Account.query.all()
+    form.account.choices = [(account.id, account.name) for account in accounts]
+
+    return render_template('insert.html', title='Insert Balance', form=form)
 
 
 @app.route('/login', methods=['GET', 'POST'])

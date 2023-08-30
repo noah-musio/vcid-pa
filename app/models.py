@@ -22,13 +22,10 @@ class User(UserMixin, db.Model):
     def load_user(id):
         return User.query.get(int(id))
 
-    
-
 class Account(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
-
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     balances = db.relationship('Balance', backref='account', lazy=True)
 
@@ -36,7 +33,8 @@ class Balance(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     account_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
     balance = db.Column(db.Float, nullable=False)    
-    date = db.Column(db.Date, nullable=False)
+    year = db.Column(db.Integer, nullable=False)
+    month = db.Column(db.Integer, nullable=False)
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)

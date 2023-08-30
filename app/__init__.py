@@ -1,5 +1,4 @@
 from flask import Flask
-#from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
@@ -9,9 +8,9 @@ import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'you-will-never-guess'
-# app.config.from_object(Config)
 
-# https://github.com/Azure-Samples/msdocs-flask-postgresql-sample-app
+
+# Quelle: https://github.com/Azure-Samples/msdocs-flask-postgresql-sample-app
 # WEBSITE_HOSTNAME exists only in production environment
 if 'WEBSITE_HOSTNAME' not in os.environ:
     # local development, where we'll use environment variables
