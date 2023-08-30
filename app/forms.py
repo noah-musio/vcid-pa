@@ -1,3 +1,4 @@
+import calendar
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, FloatField, IntegerField, SelectField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Length, NumberRange
@@ -27,12 +28,13 @@ class RegistrationForm(FlaskForm):
         if user is not None:
             raise ValidationError('Please use a different email address.')
 
-
-
 class BalanceForm(FlaskForm):
     balance = FloatField('Balance', validators=[DataRequired()])
-    year = IntegerField('Year', validators=[DataRequired(), NumberRange(min=1900, max=2100)])
-    month = SelectField('Month', choices=['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], validators=[DataRequired()])
-    account = SelectField('Account', choices=[], coerce=int, validators=[DataRequired()])
+    year = IntegerField('Year', validators=[DataRequired(), NumberRange(min=1900, max=2100)], default=2023)
+    #month = SelectField('Month', choices=['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], validators=[DataRequired()])
+    month_choices = [(str(month_num), month_name) for month_num, month_name in enumerate(calendar.month_name[1:], start=1)]
+    month = SelectField('Month', choices=month_choices, validators=[DataRequired()])
+    # Quelle: https://stackoverflow.com/questions/13964152/not-a-valid-choice-for-dynamic-select-field-wtforms
+    account = SelectField('Account', choices=[], coerce=int, validators=[DataRequired()], validate_choice=False)
     submit = SubmitField('Submit')
 
