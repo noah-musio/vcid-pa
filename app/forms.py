@@ -38,3 +38,8 @@ class BalanceForm(FlaskForm):
     account = SelectField('Account', choices=[], coerce=int, validators=[DataRequired()], validate_choice=False)
     submit = SubmitField('Submit')
 
+class AccountForm(FlaskForm):
+    account = StringField('Account Name', validators=[DataRequired()])
+    category = SelectField('Category', choices=[], coerce=int, validators=[DataRequired()], validate_choice=False)
+    submit = SubmitField('Submit')
+

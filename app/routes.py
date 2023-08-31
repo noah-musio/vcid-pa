@@ -2,7 +2,7 @@
 
 from flask import render_template, flash, redirect, url_for, request, jsonify
 from app import app, db
-from app.forms import BalanceForm, LoginForm, RegistrationForm
+from app.forms import AccountForm, BalanceForm, LoginForm, RegistrationForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Account, Category, Balance
 from werkzeug.urls import url_parse
@@ -71,8 +71,35 @@ def insert():
     accounts = Account.query.all()
     form.account.choices = [(account.id, account.name) for account in accounts]
 
-    return render_template('insert.html', title='Insert Balance', form=form)
 
+    form2 = AccountForm()
+
+    if form2.validate_on_submit():
+        category = form2.category.data
+        account = form2.account.data
+        user_id = current_user.id
+
+        category = Category.query.get(category)
+        #account = Account.query.get(account)
+
+        new_account = Account(name=account, category=category, user_id=user_id)
+
+        db.session.add(new_account)
+        db.session.commit()
+
+        flash('Account inserted successfully!', 'success')
+        return redirect(url_for('insert'))
+
+    categories = Category.query.all()
+    form2.category.choices = [(category.id, category.name) for category in categories]
+
+    return render_template('insert.html', title='Insert Balance', form=form, form2=form2)
+
+
+    #accounts = Account.query.all()
+    #form2.account.choices = [(account.id, account.name) for account in accounts]
+
+    #return render_template('insert.html', title='Insert Balance', form2=form2)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
