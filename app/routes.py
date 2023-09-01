@@ -7,6 +7,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Account, Category, Balance
 from werkzeug.urls import url_parse
 from sqlalchemy import func
+import calendar
 
 @app.route('/')
 @app.route('/index')
@@ -55,6 +56,12 @@ def insert():
         month = form.month.data
         balance_value = form.balance.data
 
+        # Validate for duplicates
+        existing_balance = Balance.query.filter_by(account_id=account_id, year=year, month=month).first()
+        if existing_balance:
+            flash('A balance entry already exists for this account.')
+            return redirect(url_for('insert'))
+
         # Get the Account instance based on the selected account_id
         account = Account.query.get(account_id)
 
@@ -71,6 +78,7 @@ def insert():
     accounts = Account.query.all()
     form.account.choices = [(account.id, account.name) for account in accounts]
 
+    flash('Balance inserted successfully!', 'success')
 
     form2 = AccountForm()
 
@@ -95,11 +103,44 @@ def insert():
 
     return render_template('insert.html', title='Insert Balance', form=form, form2=form2)
 
+@app.route('/edit', methods=['GET', 'POST'])
+@login_required
+def edit():
+    categories = Category.query.all()
+    accounts = Account.query.all()
+    years = get_years()
+    months = get_months()
+    user_id = current_user.id
+    balances_by_year_month = {}
+    entries = Balance.query.all()
+    
+    for year in years:
+        balances_by_month = {}
+        for month in months:
+            balances_for_month = Balance.query\
+                .join(Account, Balance.account_id == Account.id)\
+                .filter(Account.user_id == current_user.id, Balance.year == year, Balance.month == month)\
+                .all()
+            balances_by_month[month] = balances_for_month
+        balances_by_year_month[year] = balances_by_month
+    
+    return render_template('edit.html', title='Edit', entries=entries, categories=categories, accounts=accounts, years=years, months=months, balances=balances_by_year_month)
+def get_years():
+    years = db.session.query(Balance.year).distinct().all()
+    return [year[0] for year in years] 
+def get_months():
+    months = db.session.query(Balance.month).distinct().all()
+    return [month[0] for month in months]
 
-    #accounts = Account.query.all()
-    #form2.account.choices = [(account.id, account.name) for account in accounts]
-
-    #return render_template('insert.html', title='Insert Balance', form2=form2)
+@app.route('/balance/<int:id>/delete', methods=['GET', 'POST'])
+@login_required
+# Quelle: https://github.com/flatplanet/flasker/blob/main/app.py
+def delete_balance(id):
+    balance = Balance.query.get_or_404(id)
+    db.session.delete(balance)
+    db.session.commit()
+    flash('Balance entry deleted successfully!', 'success')
+    return redirect(url_for('edit'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

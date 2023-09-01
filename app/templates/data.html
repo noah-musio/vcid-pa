@@ -13,12 +13,6 @@
 <div class="container">
 
 
-
-
-
-
-
-
 {% for year in years | reverse %}
 
     <h2>Data for {{ year }}</h2>
@@ -58,6 +52,7 @@
             {% endfor %}
         </tbody>
         <tfoot>
+         
             <tr>
                 <td>Total</td>
                 <td></td>
@@ -73,7 +68,6 @@
                     </td>
                 {% endfor %}
             </tr>
-
 
         </tfoot>
     </table>

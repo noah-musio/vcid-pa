@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <h1>Hi, {{ current_user.username }}!</h1>
+    {% if form %}
+    {{ wtf.quick_form(form) }}
+    <br>
+    {% endif %}
+{% endblock %}
+{% block content %}
+
+<div class="container">
+
+
+
+
+    <h2>Data</h2>
+    <table class="table">
+        <thead>
+            <th>Account</th>
+            <th>Category</th>
+            <th>Month</th>
+            <th>Year</th>
+            <th>Balance</th>
+            <th></th>
+        </thead>
+        <tbody>
+            {% for entry in entries | reverse %}
+            <tr>
+                <td>{{ entry.account.name }}</td>
+                <td>{{ entry.account.category.name }}</td>
+                <td>{{ entry.month }}</td>
+                <td>{{ entry.year }}</td>
+                <td>CHF {{ entry.balance }}</td>
+                <td><a href="/balance/{{ entry.id }}/delete">Delete</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+
+</div>
+
+{% endblock %}
