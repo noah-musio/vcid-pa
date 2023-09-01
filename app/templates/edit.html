@@ -6,33 +6,6 @@
 
 <div class="container">
 
-
-
-
-    <h2>Data</h2>
-    <table class="table">
-        <thead>
-            <th>Account</th>
-            <th>Category</th>
-            <th>Month</th>
-            <th>Year</th>
-            <th>Balance</th>
-            <th></th>
-        </thead>
-        <tbody>
-            {% for entry in entries | reverse %}
-            <tr>
-                <td>{{ entry.account.name }}</td>
-                <td>{{ entry.account.category.name }}</td>
-                <td>{{ entry.month }}</td>
-                <td>{{ entry.year }}</td>
-                <td>CHF {{ entry.balance }}</td>
-                <td><a href="/balance/{{ entry.id }}/delete">Delete</a></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
     <table class="table">
         <thead>
             <th>Account</th>
@@ -55,7 +28,7 @@
                     <td class="col-md-1">
                         <input type="number" min="1900" max="2100" name="year" value="{{ entry.year }}">
                     </td>
-                    <td class="col-md-2">
+                    <td class="col-md-1">
                         <input type="text" name="balance" value="{{ entry.balance }}">
                     </td>
                     <td class="col-md-1">

@@ -161,7 +161,7 @@ def update_balance(id):
 
 @app.route('/balance/<int:id>/delete', methods=['GET', 'POST'])
 @login_required
-# Quelle: https://github.com/flatplanet/flasker/blob/main/app.py
+# Quelle: https://flask-sqlalchemy.palletsprojects.com/en/3.0.x/queries/
 def delete_balance(id):
     balance = Balance.query.get_or_404(id)
     db.session.delete(balance)
