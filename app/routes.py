@@ -112,6 +112,7 @@ def edit():
     months = get_months()
     user_id = current_user.id
     balances_by_year_month = {}
+    entries = Balance.query.all()
     
     for year in years:
         balances_by_month = {}
@@ -123,7 +124,7 @@ def edit():
             balances_by_month[month] = balances_for_month
         balances_by_year_month[year] = balances_by_month
     
-    return render_template('edit.html', title='Edit', categories=categories, accounts=accounts, years=years, months=months, balances=balances_by_year_month)
+    return render_template('edit.html', title='Edit', entries=entries, categories=categories, accounts=accounts, years=years, months=months, balances=balances_by_year_month)
 def get_years():
     years = db.session.query(Balance.year).distinct().all()
     return [year[0] for year in years] 
@@ -139,8 +140,7 @@ def delete_balance(id):
     db.session.delete(balance)
     db.session.commit()
     flash('Balance entry deleted successfully!', 'success')
-    return redirect(url_for('data'))
-
+    return redirect(url_for('edit'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
