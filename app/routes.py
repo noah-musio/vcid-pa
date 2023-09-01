@@ -132,15 +132,44 @@ def get_months():
     months = db.session.query(Balance.month).distinct().all()
     return [month[0] for month in months]
 
+
+@app.route('/balance/<int:id>/update', methods=['GET', 'POST'])
+@login_required
+def update_balance(id):
+    balance = Balance.query.get_or_404(id)
+
+    if not balance:
+        # Handle entry not found
+        return redirect(url_for('edit'))
+
+    # Get updated values from the form
+    new_balance = request.form.get('balance')
+    new_year = request.form.get('year')
+    new_month = request.form.get('month')
+
+    print(f"New balance: {new_balance}, New year: {new_year}, New month: {new_month}")
+  
+    # Update the balance, year, and month
+    balance.balance = new_balance
+    balance.year = new_year
+    balance.month = new_month
+
+    #db.session.update(balance)
+    db.session.commit()
+    flash('Balance entry updated successfully!', 'success')
+    return redirect(url_for('edit'))
+
 @app.route('/balance/<int:id>/delete', methods=['GET', 'POST'])
 @login_required
-# Quelle: https://github.com/flatplanet/flasker/blob/main/app.py
+# Quelle: https://flask-sqlalchemy.palletsprojects.com/en/3.0.x/queries/
 def delete_balance(id):
     balance = Balance.query.get_or_404(id)
     db.session.delete(balance)
     db.session.commit()
     flash('Balance entry deleted successfully!', 'success')
     return redirect(url_for('edit'))
+
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
