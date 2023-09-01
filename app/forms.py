@@ -2,7 +2,7 @@ import calendar
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, FloatField, IntegerField, SelectField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Length, NumberRange
-from app.models import User
+from app.models import User, Balance
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -29,13 +29,22 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('Please use a different email address.')
 
 class BalanceForm(FlaskForm):
-    balance = FloatField('Balance', validators=[DataRequired()])
+    # Quelle: https://stackoverflow.com/questions/13964152/not-a-valid-choice-for-dynamic-select-field-wtforms
+    account = SelectField('Account', choices=[], coerce=int, validators=[DataRequired()], validate_choice=False)
     year = IntegerField('Year', validators=[DataRequired(), NumberRange(min=1900, max=2100)], default=2023)
     #month = SelectField('Month', choices=['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], validators=[DataRequired()])
     month_choices = [(str(month_num), month_name) for month_num, month_name in enumerate(calendar.month_name[1:], start=1)]
     month = SelectField('Month', choices=month_choices, validators=[DataRequired()])
-    # Quelle: https://stackoverflow.com/questions/13964152/not-a-valid-choice-for-dynamic-select-field-wtforms
-    account = SelectField('Account', choices=[], coerce=int, validators=[DataRequired()], validate_choice=False)
+    balance = FloatField('Balance', validators=[DataRequired(), NumberRange(min=-99999999, max=999999999)])    
+    def validate_duplicates(self, account, year, month):
+        #account = self.account.data
+        #year = self.year.data
+        #month = self.month.data
+        existing_balance = Balance.query.filter_by(account_id=account, year=year, month=month).first()
+        if existing_balance:
+            raise ValidationError(f"A balance entry for {calendar.month_name[month]} {year} already exists for this account.")
+
+
     submit = SubmitField('Submit')
 
 class AccountForm(FlaskForm):
