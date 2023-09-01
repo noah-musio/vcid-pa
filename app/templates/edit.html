@@ -1,13 +1,7 @@
 {% extends "base.html" %}
 {% import 'bootstrap/wtf.html' as wtf %}
 
-{% block app_content %}
-    <h1>Hi, {{ current_user.username }}!</h1>
-    {% if form %}
-    {{ wtf.quick_form(form) }}
-    <br>
-    {% endif %}
-{% endblock %}
+
 {% block content %}
 
 <div class="container">
@@ -39,6 +33,40 @@
         </tbody>
     </table>
 
+    <table class="table">
+        <thead>
+            <th>Account</th>
+            <th>Category</th>
+            <th>Month</th>
+            <th>Year</th>
+            <th>Balance</th>
+            <th></th>
+            <th></th>
+        </thead>
+        <tbody>
+            {% for entry in entries | reverse %}
+            <tr>
+                <form method="POST" action="/balance/{{ entry.id }}/update">
+                    <td class="col-md-4">{{ entry.account.name }}</td>
+                    <td class="col-md-3">{{ entry.account.category.name }}</td>
+                    <td class="col-md-1">
+                        <input type="number" min="1" max="12" name="month" value="{{ entry.month }}">
+                    </td>
+                    <td class="col-md-1">
+                        <input type="number" min="1900" max="2100" name="year" value="{{ entry.year }}">
+                    </td>
+                    <td class="col-md-2">
+                        <input type="text" name="balance" value="{{ entry.balance }}">
+                    </td>
+                    <td class="col-md-1">
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </td>
+                </form>
+                <td class="col-md-1"><button type="submit" class="btn btn-danger" href="/balance/{{ entry.id }}/delete">Delete</button></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
 
 </div>
