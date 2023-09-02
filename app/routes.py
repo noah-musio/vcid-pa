@@ -132,12 +132,12 @@ def insert():
 @login_required
 def edit():
     categories = Category.query.all()
-    accounts = Account.query.all()
+    #user_id = current_user.id
+    accounts = Account.query.filter_by(user_id=current_user.id).all()
     years = get_years()
     months = get_months()
-    user_id = current_user.id
     balances_by_year_month = {}
-    entries = Balance.query.all()
+    entries = Balance.query.join(Account).filter(Account.user_id == current_user.id).all()
     
     for year in years:
         balances_by_month = {}
