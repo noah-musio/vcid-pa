@@ -6,19 +6,13 @@ from app.forms import AccountForm, BalanceForm, LoginForm, RegistrationForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Account, Category, Balance
 from werkzeug.urls import url_parse
-from sqlalchemy import func
+from sqlalchemy import func, and_
 import calendar
 
 @app.route('/')
 @app.route('/index')
 @login_required
 def index():
-    # user = {'username': 'Noah'}
-    return render_template('index.html', title='Home')
-
-@app.route('/data')
-@login_required
-def data():
     categories = Category.query.all()
     accounts = Account.query.all()
     years = get_years()
@@ -32,6 +26,36 @@ def data():
             balances_for_month = Balance.query\
                 .join(Account, Balance.account_id == Account.id)\
                 .filter(Account.user_id == current_user.id, Balance.year == year, Balance.month == month)\
+                .all()
+            # balances_for_month = Balance.query.filter_by(user_id=user_id, year=year, month=month).all()
+            balances_by_month[month] = balances_for_month
+        balances_by_year_month[year] = balances_by_month
+
+    return render_template('index.html', title='Home', categories=categories, accounts=accounts, years=years, months=months, balances=balances_by_year_month)
+def get_years():
+    years = db.session.query(Balance.year).distinct().all()
+    return [year[0] for year in years] 
+def get_months():
+    months = db.session.query(Balance.month).distinct().all()
+    return [month[0] for month in months]
+
+
+@app.route('/data')
+@login_required
+def data():
+    categories = Category.query.all()
+    user_id = current_user.id
+    accounts = Account.query.filter_by(user_id=user_id).all()
+    years = get_years()
+    months = get_months() 
+    balances_by_year_month = {}
+    
+    for year in years:
+        balances_by_month = {}
+        for month in months:
+            balances_for_month = Balance.query\
+                .join(Account, Balance.account_id == Account.id)\
+                .filter(Account.user_id == user_id, Balance.year == year, Balance.month == month)\
                 .all()
             # balances_for_month = Balance.query.filter_by(user_id=user_id, year=year, month=month).all()
             balances_by_month[month] = balances_for_month
@@ -218,6 +242,41 @@ def user(username):
     # return render_template('user.html', user=user, posts=posts.items,
     # next_url=next_url, prev_url=prev_url, form=form)
 
+
+@app.route('/api/users', methods=['GET'])
+# Quelle: https://pythonbasics.org/flask-rest-api/
+@login_required
+def get_users():
+    users = User.query.all()
+    user_array = []
+
+    for user in users:
+        user_list = {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+        }
+        user_array.append(user_list)
+
+    return jsonify(users=user_array)
+
+
+@app.route('/api/accounts', methods=['GET'])
+# Quelle: https://pythonbasics.org/flask-rest-api/
+@login_required
+def get_accounts():
+    accounts = Account.query.all()
+    account_array = []
+
+    for account in accounts:
+        account_list = {
+            'id': account.id,
+            'name': account.name,
+            'user': account.user_id
+        }
+        account_array.append(account_list)
+
+    return jsonify(accounts=account_array)
 
 @app.route('/logout')
 def logout():
