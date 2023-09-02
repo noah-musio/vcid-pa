@@ -30,6 +30,7 @@ class RegistrationForm(FlaskForm):
 
 class BalanceForm(FlaskForm):
     # Quelle: https://stackoverflow.com/questions/13964152/not-a-valid-choice-for-dynamic-select-field-wtforms
+
     account = SelectField('Account', choices=[], coerce=int, validators=[DataRequired()], validate_choice=False)
     year = IntegerField('Year', validators=[DataRequired(), NumberRange(min=1900, max=2100)], default=2023)
     #month = SelectField('Month', choices=['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], validators=[DataRequired()])

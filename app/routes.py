@@ -72,7 +72,8 @@ def get_months():
 @app.route('/insert', methods=['GET', 'POST'])
 @login_required
 def insert():
-    form = BalanceForm()
+    user_accounts = Account.query.filter_by(user_id=current_user.id).all()
+    form = BalanceForm(user_accounts=user_accounts)
 
     if form.validate_on_submit():
         account_id = form.account.data
@@ -99,7 +100,7 @@ def insert():
         flash('Balance inserted successfully!', 'success')
         return redirect(url_for('data'))
 
-    accounts = Account.query.all()
+    accounts = Account.query.filter_by(user_id=current_user.id).all()
     form.account.choices = [(account.id, account.name) for account in accounts]
 
     flash('Balance inserted successfully!', 'success')
