@@ -9,7 +9,7 @@
     {% endif %}
 {% endblock %}
 {% block content %}
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <div class="container">
 
 
@@ -39,7 +39,7 @@
                 <td>{{ account.name }}</td>
                 <td>{{ account.category.name }}</td>
                 {% for month in range(1, 13) %}
-                    <td>
+                    <td id="totalBalancesData">
                         {% set balance_entry = balances[year][month] | selectattr('account_id', 'eq', account.id) | first %}
                         {% if balance_entry %}
                             CHF {{ balance_entry.balance }}
@@ -66,12 +66,111 @@
                             -
                         {% endif %}
                     </td>
-                {% endfor %}
+                    {% endfor %}
+                    
             </tr>
 
         </tfoot>
     </table>
+
+
+
+
+
+<canvas id="total"></canvas>
+
+<script>
+    var totalBalanceData = []; // Create an empty array to store total balance values
+    var labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+    // Loop through the table cells to extract total balance values
+    for (var month = 1; month <= 12; month++) {
+        var totalBalanceCell = document.querySelector(`td[data-total-balance="${month}"]`);
+        var totalBalanceValue = parseFloat(totalBalanceCell.getAttribute('data-total-balance'));
+        totalBalanceData.push(totalBalanceValue);
+    }
+
+    // Now, you have the total balance data in the totalBalanceData array
+    // You can use this data to populate your Chart.js chart
+</script>
+
+<script>
+    var ctx = document.getElementById('total').getContext('2d');
+
+    // Access the data stored in the HTML element
+    // var totalBalancesDataElement = document.getElementById('totalBalancesData');
+    // var totalBalancesData = JSON.parse(totalBalancesDataElement.getAttribute('data-balances'));
+    var labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+    var chartData = {
+        labels: labels,
+        datasets: [
+            {
+                label: 'Total Balance',
+                data: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120],
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            }
+        ]
+    };
+
+    var chartConfig = {
+        type: 'line',
+        data: chartData,
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    };
+
+    var myChart = new Chart(ctx, chartConfig);
+</script>
+
+
+
+
 {% endfor %}
+
+
+<canvas id="lineChart"></canvas>
+
+<script>
+    var ctx = document.getElementById('lineChart').getContext('2d');
+
+    // Access the data stored in the HTML element
+    // var totalBalancesDataElement = document.getElementById('totalBalancesData');
+    // var totalBalancesData = JSON.parse(totalBalancesDataElement.getAttribute('data-balances'));
+    var labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+    var chartData = {
+        labels: labels,
+        datasets: [
+            {
+                label: 'Total Balance',
+                data: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120],
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            }
+        ]
+    };
+
+    var chartConfig = {
+        type: 'line',
+        data: chartData,
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    };
+
+    var myChart = new Chart(ctx, chartConfig);
+</script>
 
 
 </div>
