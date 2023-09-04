@@ -11,40 +11,18 @@ import calendar
 
 
 
-
+# Quelle: Eigenentwicklung
 @app.route('/')
 @app.route('/index')
 @login_required
 def index():
-    categories = Category.query.all()
-    accounts = Account.query.all()
-    years = get_years()
-    months = get_months()
-    user_id = current_user.id
-    balances_by_year_month = {}
-    
-    for year in years:
-        balances_by_month = {}
-        for month in months:
-            balances_for_month = Balance.query\
-                .join(Account, Balance.account_id == Account.id)\
-                .filter(Account.user_id == current_user.id, Balance.year == year, Balance.month == month)\
-                .all()
-            # balances_for_month = Balance.query.filter_by(user_id=user_id, year=year, month=month).all()
-            balances_by_month[month] = balances_for_month
-        balances_by_year_month[year] = balances_by_month
 
-    return render_template('index.html', title='Home', categories=categories, accounts=accounts, years=years, months=months, balances=balances_by_year_month)
-def get_years():
-    years = db.session.query(Balance.year).distinct().all()
-    return [year[0] for year in years] 
-def get_months():
-    months = db.session.query(Balance.month).distinct().all()
-    return [month[0] for month in months]
+    return render_template('index.html', title='Home')
 
-
+# Quelle: Eigenentwicklung
 @app.route('/data')
 @login_required
+
 def data():
     categories = Category.query.all()
     user_id = current_user.id
@@ -60,7 +38,6 @@ def data():
                 .join(Account, Balance.account_id == Account.id)\
                 .filter(Account.user_id == user_id, Balance.year == year, Balance.month == month)\
                 .all()
-            # balances_for_month = Balance.query.filter_by(user_id=user_id, year=year, month=month).all()
             balances_by_month[month] = balances_for_month
         balances_by_year_month[year] = balances_by_month
 
@@ -74,7 +51,6 @@ def data():
                 total_balances[year][month] = total_balance
             else:
                 total_balances[year][month] = None
-
 
     return render_template('data.html', title='Data', categories=categories, accounts=accounts, years=years, months=months, balances=balances_by_year_month, total_balances=total_balances)
 def get_years():
@@ -117,8 +93,6 @@ def insert():
 
     accounts = Account.query.filter_by(user_id=current_user.id).all()
     form.account.choices = [(account.id, account.name) for account in accounts]
-
-    flash('Balance inserted successfully!', 'success')
 
     form2 = AccountForm()
 
@@ -230,12 +204,26 @@ def update_account(id):
   
     # Update name, category
     account.name = new_name
-    account.category.id = new_category
+    account.category_id = new_category
 
     db.session.commit()
     flash('Account updated successfully!', 'success')
     return redirect(url_for('edit'))
 
+@app.route('/account/<int:id>/delete', methods=['GET', 'POST'])
+@login_required
+# Quelle: https://flask-sqlalchemy.palletsprojects.com/en/3.0.x/queries/
+def delete_account(id):
+    account = Account.query.get_or_404(id)
+    balance_entries = Balance.query.filter_by(account_id=id).all()
+    # Delete balance entries
+    for balance_entry in balance_entries:
+        db.session.delete(balance_entry)
+
+    db.session.delete(account)
+    db.session.commit()
+    flash('Account deleted successfully!', 'success')
+    return redirect(url_for('edit'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
