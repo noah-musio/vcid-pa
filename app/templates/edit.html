@@ -6,41 +6,86 @@
 
 <div class="container">
 
-    <table class="table">
-        <thead>
-            <th>Account</th>
-            <th>Category</th>
-            <th>Month</th>
-            <th>Year</th>
-            <th>Balance</th>
-            <th></th>
-            <th></th>
-        </thead>
-        <tbody>
-            {% for entry in entries | reverse %}
-            <tr>
-                <form method="POST" action="/balance/{{ entry.id }}/update">
-                    <td class="col-md-4">{{ entry.account.name }}</td>
-                    <td class="col-md-3">{{ entry.account.category.name }}</td>
-                    <td class="col-md-1">
-                        <input type="number" min="1" max="12" name="month" value="{{ entry.month }}">
-                    </td>
-                    <td class="col-md-1">
-                        <input type="number" min="1900" max="2100" name="year" value="{{ entry.year }}">
-                    </td>
-                    <td class="col-md-1">
-                        <input type="text" name="balance" value="{{ entry.balance }}">
-                    </td>
-                    <td class="col-md-1">
-                        <button type="submit" class="btn btn-primary">Update</button>
-                    </td>
-                </form>
-                <td class="col-md-1"><a class="btn btn-danger" href="/balance/{{ entry.id }}/delete">Delete</a></td>
-            </tr>
+    <div class="container">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-info" role="alert">{{ message }}</div>
             {% endfor %}
-        </tbody>
-    </table>
+        {% endif %}
+        {% endwith %}
+    </div>
 
+    <div class="col-md-7">
+        <h3>Edit Balance</h3>
+        <table class="table">
+            <thead>
+                <th>Account</th>
+                <th>Category</th>
+                <th>Month</th>
+                <th>Year</th>
+                <th>Balance</th>
+                <th></th>
+                <th></th>
+            </thead>
+            <tbody>
+                {% for entry in entries | reverse %}
+                <tr>
+                    <form method="POST" action="/balance/{{ entry.id }}/update">
+                        <td>{{ entry.account.name }}</td>
+                        <td>{{ entry.account.category.name }}</td>
+                        <td>
+                            <input type="number" class="form-control" min="1" max="12" name="month" value="{{ entry.month }}">
+                        </td>
+                        <td>
+                            <input type="number" class="form-control" min="1900" max="2100" name="year" value="{{ entry.year }}">
+                        </td>
+                        <td class="col-md-2">
+                            <input type="text" class="form-control" name="balance" value="{{ entry.balance }}">
+                        </td>
+                        <td>
+                            <button type="submit" class="btn btn-primary">Update</button>
+                        </td>
+                    </form>
+                    <td><a class="btn btn-danger" href="/balance/{{ entry.id }}/delete">Delete</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-5">
+        <h3>Edit Account</h3>
+        <table class="table">
+            <thead>
+                <th>Account</th>
+                <th>Category</th>
+                <th></th>
+                <th></th>
+            </thead>
+            <tbody>
+                {% for account in accounts %}
+                <tr>
+                    <form method="POST" action="/account/{{ account.id }}/update">
+                        <td>
+                            <input type="text" class="form-control" maxlength="50" name="account" value="{{ account.name }}">
+                        </td>
+                        <td>
+                            <select class="form-control" id="category" name="category" required>
+                                {% for category in categories %}
+                                    <option value="{{ category.id }}" {% if category.id == account.category.id %}selected{% endif %}>{{ category.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            <button type="submit" class="btn btn-primary">Update</button>
+                        </td>
+                    </form>
+                    <td><a class="btn btn-danger" href="/account/{{ account.id }}/delete">Delete</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>       
+    </div>
 
 </div>
 

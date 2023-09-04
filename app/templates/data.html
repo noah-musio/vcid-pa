@@ -9,7 +9,7 @@
     {% endif %}
 {% endblock %}
 {% block content %}
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <div class="container">
 
 
@@ -58,6 +58,7 @@
                 <td></td>
                 {% for month in range(1, 13) %}
                     <td>
+
                         {% set month_balances = balances[year][month] %}
                         {% if month_balances %}
                             {% set total_balance = month_balances | map(attribute='balance') | sum %}
@@ -66,12 +67,16 @@
                             -
                         {% endif %}
                     </td>
-                {% endfor %}
+                    {% endfor %}
+                    
             </tr>
 
         </tfoot>
     </table>
+
+
 {% endfor %}
+
 
 
 </div>
