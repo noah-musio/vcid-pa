@@ -163,6 +163,8 @@ def edit():
                 .all()
             balances_by_month[month] = balances_for_month
         balances_by_year_month[year] = balances_by_month
+
+    
     
     return render_template('edit.html', title='Edit', entries=entries, categories=categories, accounts=accounts, years=years, months=months, balances=balances_by_year_month)
 def get_years():
@@ -171,6 +173,9 @@ def get_years():
 def get_months():
     months = db.session.query(Balance.month).distinct().all()
     return [month[0] for month in months]
+
+
+
 
 
 @app.route('/balance/<int:id>/update', methods=['GET', 'POST'])
@@ -209,6 +214,27 @@ def delete_balance(id):
     flash('Balance entry deleted successfully!', 'success')
     return redirect(url_for('edit'))
 
+@app.route('/account/<int:id>/update', methods=['GET', 'POST'])
+@login_required
+def update_account(id):
+    account = Account.query.get_or_404(id)
+
+    if not account:
+        return redirect(url_for('edit'))
+
+    # Get values from form
+    new_name = request.form.get('account')
+    new_category = request.form.get('category')
+
+    print(f"New name: {new_name}, New category: {new_category}")
+  
+    # Update name, category
+    account.name = new_name
+    account.category.id = new_category
+
+    db.session.commit()
+    flash('Account updated successfully!', 'success')
+    return redirect(url_for('edit'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
