@@ -9,6 +9,9 @@ from werkzeug.urls import url_parse
 from sqlalchemy import func, and_
 import calendar
 
+
+
+
 @app.route('/')
 @app.route('/index')
 @login_required
@@ -60,8 +63,20 @@ def data():
             # balances_for_month = Balance.query.filter_by(user_id=user_id, year=year, month=month).all()
             balances_by_month[month] = balances_for_month
         balances_by_year_month[year] = balances_by_month
-    
-    return render_template('data.html', title='Data', categories=categories, accounts=accounts, years=years, months=months, balances=balances_by_year_month)
+
+    total_balances = {}
+    for year in years:
+        total_balances[year] = {}
+        for month in months:
+            month_balances = balances_by_year_month[year][month]
+            if month_balances:
+                total_balance = sum(balance.balance for balance in month_balances)
+                total_balances[year][month] = total_balance
+            else:
+                total_balances[year][month] = None
+
+
+    return render_template('data.html', title='Data', categories=categories, accounts=accounts, years=years, months=months, balances=balances_by_year_month, total_balances=total_balances)
 def get_years():
     years = db.session.query(Balance.year).distinct().all()
     return [year[0] for year in years] 
