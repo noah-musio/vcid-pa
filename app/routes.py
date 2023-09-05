@@ -57,7 +57,6 @@ def get_data_years():
     years = db.session.query(Balance.year).join(Account).join(User).filter(User.id == current_user.id).distinct().all()
     years = sorted([year[0] for year in years])
     return years
-    #return [year[0] for year in years] 
 def get_data_months():
     months = db.session.query(Balance.month).distinct().all()
     return [month[0] for month in months]
@@ -137,11 +136,9 @@ def edit():
             balances_by_month[month] = balances_for_month
         balances_by_year_month[year] = balances_by_month
 
-    
-    
     return render_template('edit.html', title='Edit', entries=entries, categories=categories, accounts=accounts, years=years, months=months, balances=balances_by_year_month)
 def get_years():
-    years = db.session.query(Balance.year).distinct().all()
+    years = db.session.query(Balance.year).join(Account).join(User).filter(User.id == current_user.id).distinct().all()
     return [year[0] for year in years] 
 def get_months():
     months = db.session.query(Balance.month).distinct().all()
@@ -168,7 +165,6 @@ def update_balance(id):
     balance.year = new_year
     balance.month = new_month
 
-    #db.session.update(balance)
     db.session.commit()
     flash('Balance entry updated successfully!', 'success')
     return redirect(url_for('edit'))
