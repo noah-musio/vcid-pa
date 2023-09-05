@@ -27,8 +27,8 @@ def data():
     categories = Category.query.all()
     user_id = current_user.id
     accounts = Account.query.filter_by(user_id=user_id).all()
-    years = get_years()
-    months = get_months() 
+    years = get_data_years()
+    months = get_data_months() 
     balances_by_year_month = {}
     
     for year in years:
@@ -53,10 +53,11 @@ def data():
                 total_balances[year][month] = None
 
     return render_template('data.html', title='Data', categories=categories, accounts=accounts, years=years, months=months, balances=balances_by_year_month, total_balances=total_balances)
-def get_years():
-    years = db.session.query(Balance.year).distinct().all()
-    return [year[0] for year in years] 
-def get_months():
+def get_data_years():
+    years = db.session.query(Balance.year).join(Account).join(User).filter(User.id == current_user.id).distinct().all()
+    years = sorted([year[0] for year in years])
+    return years
+def get_data_months():
     months = db.session.query(Balance.month).distinct().all()
     return [month[0] for month in months]
 
@@ -131,26 +132,17 @@ def edit():
     for year in years:
         balances_by_month = {}
         for month in months:
-            balances_for_month = Balance.query\
-                .join(Account, Balance.account_id == Account.id)\
-                .filter(Account.user_id == current_user.id, Balance.year == year, Balance.month == month)\
-                .all()
+            balances_for_month = Balance.query.join(Account, Balance.account_id == Account.id).filter(Account.user_id == current_user.id, Balance.year == year, Balance.month == month).all()
             balances_by_month[month] = balances_for_month
         balances_by_year_month[year] = balances_by_month
 
-    
-    
     return render_template('edit.html', title='Edit', entries=entries, categories=categories, accounts=accounts, years=years, months=months, balances=balances_by_year_month)
 def get_years():
-    years = db.session.query(Balance.year).distinct().all()
+    years = db.session.query(Balance.year).join(Account).join(User).filter(User.id == current_user.id).distinct().all()
     return [year[0] for year in years] 
 def get_months():
     months = db.session.query(Balance.month).distinct().all()
     return [month[0] for month in months]
-
-
-
-
 
 @app.route('/balance/<int:id>/update', methods=['GET', 'POST'])
 @login_required
@@ -173,7 +165,6 @@ def update_balance(id):
     balance.year = new_year
     balance.month = new_month
 
-    #db.session.update(balance)
     db.session.commit()
     flash('Balance entry updated successfully!', 'success')
     return redirect(url_for('edit'))
@@ -290,12 +281,27 @@ def get_users():
 
     return jsonify(users=user_array)
 
+@app.route('/api/categories', methods=['GET'])
+# Quelle: https://pythonbasics.org/flask-rest-api/
+@login_required
+def get_categories():
+    categories = Category.query.all()
+    category_array = []
+
+    for category in categories:
+        category_list = {
+            'id': category.id,
+            'name': category.name,
+        }
+        category_array.append(category_list)
+
+    return jsonify(category=category_array)
 
 @app.route('/api/accounts', methods=['GET'])
 # Quelle: https://pythonbasics.org/flask-rest-api/
 @login_required
 def get_accounts():
-    accounts = Account.query.all()
+    accounts = Account.query.filter_by(user_id=current_user.id).all()
     account_array = []
 
     for account in accounts:
@@ -307,6 +313,26 @@ def get_accounts():
         account_array.append(account_list)
 
     return jsonify(accounts=account_array)
+
+@app.route('/api/balances', methods=['GET'])
+# Quelle: https://pythonbasics.org/flask-rest-api/
+@login_required
+def get_balances():
+    # balances = Balance.query.filter_by(user_id=current_user.id).all()
+    balances = Balance.query.join(Account).filter(Account.user_id == current_user.id).all()
+    balance_array = []
+
+    for balance in balances:
+        balance_list = {
+            'id': balance.id,
+            'account_id': balance.account_id,
+            'balance': balance.balance,
+            'year': balance.year,
+            'month': balance.month,
+        }
+        balance_array.append(balance_list)
+
+    return jsonify(balances=balance_array)
 
 @app.route('/logout')
 def logout():
