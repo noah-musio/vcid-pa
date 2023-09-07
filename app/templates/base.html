@@ -21,7 +21,7 @@
                 <ul class="nav navbar-nav">
                     <li><a href="{{ url_for('index') }}">Home</a></li>
                     <li><a href="{{ url_for('data') }}">Data</a></li>
-                    <li><a href="{{ url_for('insert') }}">Add</a></li>
+                    <li><a href="{{ url_for('add') }}">Add</a></li>
                     <li><a href="{{ url_for('edit') }}">Edit</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
@@ -37,6 +37,7 @@
     </nav>
 {% endblock %}
 
+<!-- Message display, Quelle: https://github.com/miguelgrinberg/microblog/blob/v0.23/app/templates/base.html -->
 {% block content %}
     <div class="container">
         {% with messages = get_flashed_messages() %}

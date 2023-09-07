@@ -1,4 +1,4 @@
-# Quelle: https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-vii-error-handling
+# Error Handling, Quelle: https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-vii-error-handling
 from flask import render_template
 from app import app, db
 

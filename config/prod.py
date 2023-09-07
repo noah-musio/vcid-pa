@@ -1,5 +1,5 @@
 
-# https://github.com/Azure-Samples/msdocs-flask-postgresql-sample-app
+# Konfiguration für Azure, Quelle: https://github.com/Azure-Samples/msdocs-flask-postgresql-sample-app
 import os
 
 # SECURITY WARNING: keep the secret key used in production secret!

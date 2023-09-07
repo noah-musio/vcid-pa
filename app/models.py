@@ -2,7 +2,7 @@ from app import db, login
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
-
+# User class, Quelle: https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-v-user-logins
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), index=True, unique=True, nullable=False)
@@ -22,20 +22,21 @@ class User(UserMixin, db.Model):
     def load_user(id):
         return User.query.get(int(id))
 
+# Account class, Quelle: Eigenentwicklung in Anlehnung an https://github.com/miguelgrinberg/microblog/blob/v0.23/app/models.py
 class Account(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     balances = db.relationship('Balance', backref='account', lazy=True)
-
+# Balance class, Quelle: Eigenentwicklung in Anlehnung an https://github.com/miguelgrinberg/microblog/blob/v0.23/app/models.py
 class Balance(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     account_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
     balance = db.Column(db.Float, nullable=False)    
     year = db.Column(db.Integer, nullable=False)
     month = db.Column(db.Integer, nullable=False)
-
+# Category class, Quelle: Eigenentwicklung in Anlehnung an https://github.com/miguelgrinberg/microblog/blob/v0.23/app/models.py
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
