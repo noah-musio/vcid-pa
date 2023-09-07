@@ -3,3 +3,4 @@ __pycache__
 app/__pycache__/*
 migrations/versions/*
 app/templates/user.html
+config/__pycache__/*
