@@ -1,0 +1,1891 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "sites_vcid_name": {
+            "defaultValue": "vcid",
+            "type": "String"
+        },
+        "serverfarms_ASP_vcidgroup_8a9f_externalid": {
+            "defaultValue": "/subscriptions/05a8150f-51f1-4fe1-96f9-d06018bb1342/resourceGroups/vcid_group/providers/Microsoft.Web/serverfarms/ASP-vcidgroup-8a9f",
+            "type": "String"
+        },
+        "virtualNetworks_vcidVnet_externalid": {
+            "defaultValue": "/subscriptions/05a8150f-51f1-4fe1-96f9-d06018bb1342/resourceGroups/vcid_group/providers/Microsoft.Network/virtualNetworks/vcidVnet",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2022-09-01",
+            "name": "[parameters('sites_vcid_name')]",
+            "location": "East US",
+            "kind": "app,linux",
+            "properties": {
+                "enabled": true,
+                "hostNameSslStates": [
+                    {
+                        "name": "[concat(parameters('sites_vcid_name'), '.azurewebsites.net')]",
+                        "sslState": "Disabled",
+                        "hostType": "Standard"
+                    },
+                    {
+                        "name": "[concat(parameters('sites_vcid_name'), '.scm.azurewebsites.net')]",
+                        "sslState": "Disabled",
+                        "hostType": "Repository"
+                    }
+                ],
+                "serverFarmId": "[parameters('serverfarms_ASP_vcidgroup_8a9f_externalid')]",
+                "reserved": true,
+                "isXenon": false,
+                "hyperV": false,
+                "vnetRouteAllEnabled": true,
+                "vnetImagePullEnabled": false,
+                "vnetContentShareEnabled": false,
+                "siteConfig": {
+                    "numberOfWorkers": 1,
+                    "linuxFxVersion": "PYTHON|3.10",
+                    "acrUseManagedIdentityCreds": false,
+                    "alwaysOn": true,
+                    "http20Enabled": false,
+                    "functionAppScaleLimit": 0,
+                    "minimumElasticInstanceCount": 0
+                },
+                "scmSiteAlsoStopped": false,
+                "clientAffinityEnabled": false,
+                "clientCertEnabled": false,
+                "clientCertMode": "Required",
+                "hostNamesDisabled": false,
+                "customDomainVerificationId": "41F56C1F7EB5429DF3ADB9CAAACF654520170694CE0397CAA971BF70123502FA",
+                "containerSize": 0,
+                "dailyMemoryTimeQuota": 0,
+                "httpsOnly": false,
+                "redundancyMode": "None",
+                "storageAccountRequired": false,
+                "virtualNetworkSubnetId": "[concat(parameters('virtualNetworks_vcidVnet_externalid'), concat('/subnets/', parameters('sites_vcid_name'), 'AppSubnet'))]",
+                "keyVaultReferenceIdentity": "SystemAssigned"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
+            "apiVersion": "2022-09-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/ftp')]",
+            "location": "East US",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ],
+            "properties": {
+                "allow": true
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
+            "apiVersion": "2022-09-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/scm')]",
+            "location": "East US",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ],
+            "properties": {
+                "allow": true
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/config",
+            "apiVersion": "2022-09-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/web')]",
+            "location": "East US",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ],
+            "properties": {
+                "numberOfWorkers": 1,
+                "defaultDocuments": [
+                    "Default.htm",
+                    "Default.html",
+                    "Default.asp",
+                    "index.htm",
+                    "index.html",
+                    "iisstart.htm",
+                    "default.aspx",
+                    "index.php",
+                    "hostingstart.html"
+                ],
+                "netFrameworkVersion": "v4.0",
+                "linuxFxVersion": "PYTHON|3.10",
+                "requestTracingEnabled": false,
+                "remoteDebuggingEnabled": false,
+                "remoteDebuggingVersion": "VS2019",
+                "httpLoggingEnabled": false,
+                "acrUseManagedIdentityCreds": false,
+                "logsDirectorySizeLimit": 35,
+                "detailedErrorLoggingEnabled": false,
+                "publishingUsername": "$vcid",
+                "scmType": "GitHubAction",
+                "use32BitWorkerProcess": true,
+                "webSocketsEnabled": false,
+                "alwaysOn": true,
+                "appCommandLine": "start.sh",
+                "managedPipelineMode": "Integrated",
+                "virtualApplications": [
+                    {
+                        "virtualPath": "/",
+                        "physicalPath": "site\\wwwroot",
+                        "preloadEnabled": true
+                    }
+                ],
+                "loadBalancing": "LeastRequests",
+                "experiments": {
+                    "rampUpRules": []
+                },
+                "autoHealEnabled": false,
+                "vnetName": "b1f0bcbc-10be-4ac1-b6b0-913daeb48714_vcidAppSubnet",
+                "vnetRouteAllEnabled": true,
+                "vnetPrivatePortsCount": 0,
+                "localMySqlEnabled": false,
+                "ipSecurityRestrictions": [
+                    {
+                        "ipAddress": "Any",
+                        "action": "Allow",
+                        "priority": 2147483647,
+                        "name": "Allow all",
+                        "description": "Allow all access"
+                    }
+                ],
+                "scmIpSecurityRestrictions": [
+                    {
+                        "ipAddress": "Any",
+                        "action": "Allow",
+                        "priority": 2147483647,
+                        "name": "Allow all",
+                        "description": "Allow all access"
+                    }
+                ],
+                "scmIpSecurityRestrictionsUseMain": false,
+                "http20Enabled": false,
+                "minTlsVersion": "1.2",
+                "scmMinTlsVersion": "1.2",
+                "ftpsState": "FtpsOnly",
+                "preWarmedInstanceCount": 0,
+                "elasticWebAppScaleLimit": 0,
+                "functionsRuntimeScaleMonitoringEnabled": false,
+                "minimumElasticInstanceCount": 0,
+                "azureStorageAccounts": {}
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/0adb140d-1c13-4b62-a8e4-91e388d1ed7c')]",
+            "location": "East US",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "GITHUB_ZIP_DEPLOY",
+                "message": "{\"type\":\"deployment\",\"sha\":\"ba766805c230e65baad3a2270669de5944f3e4ee\",\"repoName\":\"noah-musio/vcid-pa\",\"actor\":\"noah-musio\",\"slotName\":\"Production\",\"commitMessage\":\"Merge pull request #26 from noah-musio/dev\\n\\nfixed edit section for balances only for current_user\"}",
+                "start_time": "2023-09-02T20:57:32.0615575Z",
+                "end_time": "2023-09-02T20:58:47.581049Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/4bbb656c-6ffa-494d-b0ce-448f28d79c37')]",
+            "location": "East US",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "GITHUB_ZIP_DEPLOY",
+                "message": "{\"type\":\"deployment\",\"sha\":\"1317e9e78e189fb8faee0f201f96dcfffcc514a3\",\"repoName\":\"noah-musio/vcid-pa\",\"actor\":\"noah-musio\",\"slotName\":\"Production\",\"commitMessage\":\"Merge pull request #23 from noah-musio/dev\\n\\ndelete balance fix\"}",
+                "start_time": "2023-09-01T23:16:29.3389363Z",
+                "end_time": "2023-09-01T23:18:02.9310194Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/5250f705-217c-4f01-887e-20af956c8be7')]",
+            "location": "East US",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "GITHUB_ZIP_DEPLOY",
+                "message": "{\"type\":\"deployment\",\"sha\":\"40135e5c5c738a9379c3eb7a955d0a0925b5d53d\",\"repoName\":\"noah-musio/vcid-pa\",\"actor\":\"noah-musio\",\"slotName\":\"Production\",\"commitMessage\":\"Delete __pycache__ directory\"}",
+                "start_time": "2023-09-06T21:59:27.8451467Z",
+                "end_time": "2023-09-06T22:04:14.0769186Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/67583f32-aabf-4ab8-9629-c99cd309c8c8')]",
+            "location": "East US",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "GITHUB_ZIP_DEPLOY",
+                "message": "{\"type\":\"deployment\",\"sha\":\"cc442f50866921ab61ea23e5e3a751285432b297\",\"repoName\":\"noah-musio/vcid-pa\",\"actor\":\"noah-musio\",\"slotName\":\"Production\",\"commitMessage\":\"Merge pull request #27 from noah-musio/dev\\n\\nDev\"}",
+                "start_time": "2023-09-04T22:18:09.6873423Z",
+                "end_time": "2023-09-04T22:22:21.5866742Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/7be83d80-a58a-417e-8d19-7d0ac36b1f51')]",
+            "location": "East US",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "GITHUB_ZIP_DEPLOY",
+                "message": "{\"type\":\"deployment\",\"sha\":\"61d4d7dc6462e940087543e8eb8e18eed4a9d281\",\"repoName\":\"noah-musio/vcid-pa\",\"actor\":\"noah-musio\",\"slotName\":\"Production\",\"commitMessage\":\"Merge pull request #28 from noah-musio/dev\\n\\nDev\"}",
+                "start_time": "2023-09-05T20:48:13.7505459Z",
+                "end_time": "2023-09-05T20:52:26.3447674Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/9b3b51ab-2190-4935-9079-43feffeeddd0')]",
+            "location": "East US",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "GITHUB_ZIP_DEPLOY",
+                "message": "{\"type\":\"deployment\",\"sha\":\"3e32829ec18b34732c57a7b64e8ac9d612d51136\",\"repoName\":\"noah-musio/vcid-pa\",\"actor\":\"noah-musio\",\"slotName\":\"Production\",\"commitMessage\":\"Merge pull request #22 from noah-musio/dev\\n\\nDev\"}",
+                "start_time": "2023-09-01T21:49:35.1586839Z",
+                "end_time": "2023-09-01T21:50:51.8854242Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/bb36e20f-3176-4b22-af93-39806be1c6da')]",
+            "location": "East US",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "GITHUB_ZIP_DEPLOY",
+                "message": "{\"type\":\"deployment\",\"sha\":\"0e9f645d5f6e3a656dd113ce5d4933f86637df5f\",\"repoName\":\"noah-musio/vcid-pa\",\"actor\":\"noah-musio\",\"slotName\":\"Production\",\"commitMessage\":\"Merge pull request #29 from noah-musio/dev\\n\\nDev\"}",
+                "start_time": "2023-09-07T20:48:15.8193947Z",
+                "end_time": "2023-09-07T20:52:30.8175928Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/be552834-a97d-448f-b9b1-0f1430c79109')]",
+            "location": "East US",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "GITHUB_ZIP_DEPLOY",
+                "message": "{\"type\":\"deployment\",\"sha\":\"b5532f85944772b53c772b173b180de58d20b8a8\",\"repoName\":\"noah-musio/vcid-pa\",\"actor\":\"noah-musio\",\"slotName\":\"Production\",\"commitMessage\":\"Merge pull request #25 from noah-musio/dev\\n\\nfixed form for balance\"}",
+                "start_time": "2023-09-02T20:29:05.9608086Z",
+                "end_time": "2023-09-02T20:30:23.0067463Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/d56b8ac8-ae4a-4b58-8149-b34136517c29')]",
+            "location": "East US",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "GITHUB_ZIP_DEPLOY",
+                "message": "{\"type\":\"deployment\",\"sha\":\"b749414f62f6f6a45375910f680187f610e278a8\",\"repoName\":\"noah-musio/vcid-pa\",\"actor\":\"noah-musio\",\"slotName\":\"Production\",\"commitMessage\":\"Merge pull request #24 from noah-musio/dev\\n\\nfixed data for logged in user\"}",
+                "start_time": "2023-09-02T19:40:51.6049211Z",
+                "end_time": "2023-09-02T19:42:08.8641909Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/d96ef17c-97ea-4e02-a91c-4b68f7bef145')]",
+            "location": "East US",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "GITHUB_ZIP_DEPLOY",
+                "message": "{\"type\":\"deployment\",\"sha\":\"b425c9b68cd5e4cdcbc110b05f154c77bd5c5d1a\",\"repoName\":\"noah-musio/vcid-pa\",\"actor\":\"noah-musio\",\"slotName\":\"Production\",\"commitMessage\":\"Merge pull request #30 from noah-musio/dev\\n\\nBugfix base.html\"}",
+                "start_time": "2023-09-07T21:01:49.2476852Z",
+                "end_time": "2023-09-07T21:06:24.8595708Z",
+                "active": true
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/hostNameBindings",
+            "apiVersion": "2022-09-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/', parameters('sites_vcid_name'), '.azurewebsites.net')]",
+            "location": "East US",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ],
+            "properties": {
+                "siteName": "vcid",
+                "hostNameType": "Verified"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-22T13_32_03_7008619')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-22T22_32_04_2575186')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-23T04_32_04_7111661')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-23T10_32_05_0729504')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-23T16_32_05_4256050')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-23T22_32_05_7883294')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-24T10_32_06_5034674')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-24T16_32_06_9533670')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-24T22_32_07_2400387')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-25T07_32_07_8233177')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-25T10_32_08_0338606')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-25T13_32_08_2362725')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-25T16_32_08_4706930')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-25T19_32_08_6405665')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-25T22_32_08_8965087')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-26T04_32_09_2320815')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-26T07_32_09_4298277')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-26T10_32_09_6207230')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-26T13_32_09_8307017')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-26T16_32_10_0836803')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-26T19_32_10_2122636')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-26T22_32_10_3884851')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-27T04_32_10_7852603')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-27T07_32_10_9875883')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-27T10_32_11_1705837')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-27T13_32_11_3790053')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-27T16_32_11_5450932')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-27T19_32_11_7320610')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-27T22_32_12_0028924')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-28T04_32_12_4342419')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-28T07_32_12_5433047')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-28T10_32_12_7848512')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-28T13_32_12_9417186')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-28T16_32_13_2043354')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-28T19_32_13_3243055')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-28T22_32_13_5882705')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-29T04_32_13_9649665')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-29T07_32_14_1051150')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-29T10_32_14_2921002')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-29T13_32_14_5028499')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-29T16_32_14_7144753')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-29T19_32_14_9083605')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-29T22_32_15_1418249')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-30T04_32_15_5089836')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-30T07_32_15_6817644')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-30T10_32_15_8825286')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-30T13_32_16_0837756')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-30T16_32_16_3056682')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-30T19_32_16_5033733')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-30T22_32_16_6581980')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-31T04_32_17_0225414')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-31T07_32_17_1994308')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-31T10_32_17_4055646')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-31T13_32_17_5408805')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-31T16_32_17_7702001')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-31T19_32_17_9316353')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-08-31T22_32_18_1049905')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-01T04_32_18_4657406')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-01T07_32_18_6354736')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-01T10_32_18_8393722')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-01T13_32_19_0359837')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-01T16_32_19_2328276')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-01T19_32_19_8071849')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-01T22_32_20_0030192')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-02T05_32_20_4431459')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-02T08_32_20_6157783')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-02T11_32_20_7957630')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-02T14_32_20_9681103')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-02T17_32_21_1605029')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-02T20_32_21_3519508')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-02T23_32_21_5822146')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-03T02_32_21_7745696')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-03T08_32_22_1597997')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-03T11_32_22_3389014')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-03T14_32_22_5504788')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-03T17_32_22_7549523')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-03T20_32_22_9566961')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-03T23_32_23_1541872')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-04T02_32_23_4556708')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-04T08_32_23_7744779')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-04T09_32_23_8306208')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-04T10_32_23_8968845')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-04T11_32_23_9542689')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-04T12_32_24_0404548')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-04T13_32_24_1006375')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-04T14_32_24_1700159')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-04T15_32_24_2428363')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-04T16_32_24_2992384')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-04T17_32_24_3739668')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-04T18_32_24_4508284')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-04T19_32_24_5333932')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-04T20_32_24_6144046')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-04T21_32_24_6888268')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-04T22_32_24_7646520')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-04T23_32_24_8502491')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-05T00_32_24_9071886')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-05T01_32_25_0119002')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-05T02_32_25_0402176')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-05T03_32_25_1288282')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-05T04_32_25_1960478')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-05T05_32_25_2541480')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-05T06_32_25_3251261')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-05T07_32_25_4085565')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-05T08_32_25_4843447')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-05T09_32_25_5288725')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-05T10_32_25_6217896')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-05T11_32_25_6873179')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-05T12_32_25_7492569')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-05T13_32_25_8137253')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-05T14_32_25_9134843')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-05T15_32_25_9939074')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-05T16_32_26_0556909')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-05T17_32_26_1012602')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-05T18_32_26_1708442')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-05T19_32_26_2976596')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-05T20_32_26_3086756')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-05T21_32_26_3794402')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-05T22_32_26_4684803')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-05T23_32_26_5606997')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-06T00_32_26_6035825')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-06T01_32_26_7362836')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-06T02_32_26_7386765')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-06T03_32_26_8413845')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-06T04_32_26_8830468')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-06T05_32_26_9606402')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-06T06_32_27_0251855')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-06T07_32_27_0893018')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-06T09_25_37_6907094')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-06T10_25_37_8662919')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-06T11_25_37_9782929')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-06T12_25_38_0905578')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-06T13_25_38_2340520')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-06T14_25_38_3623987')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-06T15_25_38_4665142')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-06T16_25_38_5955708')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-06T17_25_38_8889952')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-06T18_25_38_8479344')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-06T19_25_38_9687376')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-06T20_25_39_1015135')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-06T21_25_39_2191742')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-06T22_25_39_3266335')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-06T23_25_39_4450102')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-07T00_25_39_5633002')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-07T01_25_39_6800070')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-07T02_25_39_8016041')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-07T03_25_39_9428927')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-07T04_25_40_0739391')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-07T05_25_40_1820480')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-07T06_25_40_4962984')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-07T07_25_40_4685372')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-07T08_25_40_5452836')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-07T09_25_40_6572178')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-07T10_25_40_7515016')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-07T11_25_40_8868706')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-07T12_25_41_0132331')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-07T13_25_41_1586816')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-07T14_25_41_2663417')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-07T15_25_41_3995534')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-07T16_25_41_5299510')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-07T17_25_41_6494080')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-07T18_25_41_7719050')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-07T19_25_41_8918420')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-07T20_25_42_0207644')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-07T21_25_42_1444653')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-07T22_25_42_2640203')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-07T23_25_42_3905404')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-08T00_25_42_5215749')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-08T01_25_42_6470489')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-08T02_25_42_7667843')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-08T03_25_42_8862594')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-08T04_25_43_0306525')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-08T05_25_43_1282468')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-08T06_25_43_2572467')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-08T07_25_43_3800489')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-08T08_25_43_5399231')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-08T09_25_43_6358473')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-08T10_25_43_8348452')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-08T11_25_43_9618019')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-08T12_25_44_0210174')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-08T13_25_44_1529480')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-08T14_25_44_2578834')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-08T15_25_44_3966407')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-08T16_25_44_5152556')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-08T17_25_44_6554532')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-08T18_25_44_7536579')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-08T19_25_44_8904700')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/2023-09-08T20_25_45_0372416')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/virtualNetworkConnections",
+            "apiVersion": "2022-09-01",
+            "name": "[concat(parameters('sites_vcid_name'), '/b1f0bcbc-10be-4ac1-b6b0-913daeb48714_', parameters('sites_vcid_name'), 'AppSubnet')]",
+            "location": "East US",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_vcid_name'))]"
+            ],
+            "properties": {
+                "vnetResourceId": "[concat(parameters('virtualNetworks_vcidVnet_externalid'), '/subnets/vcidAppSubnet')]",
+                "isSwift": true
+            }
+        }
+    ]
+}
